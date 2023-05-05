@@ -5,7 +5,8 @@ export default function Document() {
     <Html lang="en">
       <Head />
       <body
-      className='bg-gradient-to-r 
+        className='
+      bg-gradient-to-r 
       from-pink-300 
       via-purple-300 
       to-indigo-400'>

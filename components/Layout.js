@@ -1,9 +1,10 @@
 import Head from "next/head";
 import Nav from "./Nav";
+import { UserProvider } from "@/lib/authContext";
 
-export default function Layout({ children }) {
+export default function Layout({ user, loading = false, children }) {
     return (
-        <>
+        <UserProvider value={{user, loading}}>
             <Head>
                 <title>
                     File Database
@@ -28,6 +29,6 @@ export default function Layout({ children }) {
                     </div>
                 </div>
             </main>
-        </>
+        </UserProvider>
     );
 } 

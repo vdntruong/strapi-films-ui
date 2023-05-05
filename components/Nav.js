@@ -1,9 +1,44 @@
+import { fetcher } from "@/lib/api";
 import Link from "next/link";
+import { useState } from "react";
+import { setToken, unsetToken } from "@/lib/auth";
+import { useUser } from "@/lib/authContext";
 
 export default function Nav() {
-    return (
-        <nav
-            className="
+  const [data, setData] = useState({
+    identifier: '',
+    password: '',
+  });
+
+  const { user, loading } = useUser();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const responseData = await fetcher(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/auth/local`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        identifier: data.identifier,
+        password: data.password
+      })
+    })
+    setToken(responseData);
+  };
+
+  const logout = () => {
+    unsetToken();
+  }
+
+  const handleChange = (e) => {
+    setData({ ...data, [e.target.name]: e.target.value });
+  };
+
+  return (
+    <nav
+      className="
         flex 
         flex-wrap
         items-center
@@ -14,60 +49,116 @@ export default function Nav() {
         px-4
         text-lg text-gray-700
         bg-white">
-            <div>
-                <Link href='/' passHref>
-                    <div>
-                        {/* eslint-disable @next/next/no-img-element */}
-                        <img
-                            className="m-3"
-                            src="/strapi-logo.png"
-                            width={200}
-                            height={50}
-                            alt="Strapi Logo"
-                        >
-                        </img>
-                    </div>
-                </Link>
-            </div>
-
-            <svg
-                xmlns="http:/www.w3.org/2000/svg"
-                id="menu-button"
-                className="h-6 w-6 cursor-pointer md:hidden block"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+      <div>
+        <Link href='/' passHref>
+          <div>
+            {/* eslint-disable @next/next/no-img-element */}
+            <img
+              className="m-3"
+              src="/strapi-logo.png"
+              width={200}
+              height={50}
+              alt="Strapi Logo"
             >
-                <path strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
+            </img>
+          </div>
+        </Link>
+      </div>
 
-            <div
-                className="hidden w-full md:flex md:items-center md:w-auto"
-                id="menu">
-                <ul
-                    className="
+      <svg
+        xmlns="http:/www.w3.org/2000/svg"
+        id="menu-button"
+        className="h-6 w-6 cursor-pointer md:hidden block"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth="2"
+          d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+
+      <div
+        className="hidden w-full md:flex md:items-center md:w-auto"
+        id="menu">
+        <ul
+          className="
                 pt-4
                 text-base text-gray-700
                 md:flex
                 md:justify-between
                 md:pt-0 space-x-2">
-                    <li>
-                        <Link href="/">
-                            <div className="md:p-2 py-2 block hover:text-purple-400">Home</div>
-                        </Link>
-                    </li>
-                    <li>
-                        <Link href="/films">
-                            <div className="md:p-2 py-2 block hover:text-purple-400" href="#">
-                                Films
-                            </div>
-                        </Link>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    )
+          <li>
+            <Link href="/">
+              <div className="md:p-2 py-2 block hover:text-purple-400">Home</div>
+            </Link>
+          </li>
+          <li>
+            <Link href="/films">
+              <div className="md:p-2 py-2 block hover:text-purple-400" href="#">
+                Films
+              </div>
+            </Link>
+          </li>
+
+          {!loading && (user ? (
+            <li>
+              <Link href="/profile">
+                <div className="md:p-2 py-2 block hover:text-purple-400">
+                  Profile
+                </div>
+              </Link>
+            </li>
+          ) : "")}
+
+          {!loading && (user ? (
+            <li>
+              <div className="md:p-2 py-2 block hover:text-purple-400"
+                onClick={logout}
+                style={{ cursor: 'pointer' }}>Logout</div>
+            </li>
+          ) : "")}
+
+          {!loading && (!user ? (
+            <>
+              <li>
+                <form onSubmit={handleSubmit} className="form-inline">
+                  <input
+                    type="text"
+                    name="identifier"
+                    onChange={handleChange}
+                    placeholder="Username"
+                    className="md:p-2 form-input py-2 rounded mx-2"
+                    required
+                  />
+
+                  <input
+                    type="password"
+                    name="password"
+                    onChange={handleChange}
+                    placeholder="Password"
+                    className="md:p-2 form-input py-2 rounded mx-2"
+                    required
+                  />
+
+                  <button
+                    className="md:p-2 rounded py-2 text-black bg-purple-200 p-2"
+                    type="submit" >
+                      Login
+                  </button>
+                </form>
+              </li>
+              <li>
+                <Link href="/register">
+                  <div className="md:p-2 block py-2 hover:text-purple-400 text-black">Register</div>
+                </Link>
+              </li>
+            </>
+          ) : "")}
+
+        </ul>
+      </div>
+    </nav>
+  )
 }
