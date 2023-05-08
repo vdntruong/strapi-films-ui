@@ -33,8 +33,9 @@ export default async function upload(req, res) {
             });
             const { public_id } = response;
             const jwt = getTokenFromServerCookie(req);
-            const userResponse = await fetch(
-                `${process.env.NEXT_PUBLIC_STRAPI_URL}/users/${user_id}`,
+            // const userResponse = await fetch(
+            await fetch(
+                `${process.env.NEXT_PUBLIC_STRAPI_URL}/api/users/${user_id}`,
                 {
                     method: 'PUT',
                     headers: {
@@ -46,7 +47,7 @@ export default async function upload(req, res) {
                     }),
                 }
             );
-            const data = await userResponse.json();
+            // const data = await userResponse.json();
             return res.json({ message: 'success' });
         } catch (error) {
             console.error(JSON.stringify(error));

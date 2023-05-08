@@ -29,10 +29,7 @@ const Profile = ({ avatar }) => {
                     body: formData,
                 }
             );
-            console.log({responseData})
-
             if (responseData.message === 'success') {
-                alert('done done done')
                 router.reload('/profile')
             }
 
@@ -56,13 +53,16 @@ const Profile = ({ avatar }) => {
                     <div>
                         <h4>Select an image to upload</h4>
                         <input type="file" onChange={uploadToSClient} />
-                        <butotn className='md:p-2 rounded py-2 text-black bg-purple-200 p-2' type='submit' onClick={uploadToServer}>
+                        <butotn
+                            className='md:p-2 rounded py-2 text-black bg-purple-200 p-2'
+                            type='submit'
+                            onClick={uploadToServer}>
                             Set Profile Image
                         </butotn>
                     </div>
                 )}
                 {avatar && (
-                    <img src={`https://res.cloudinary.com/dllncczbq/image/upload/${avatar}`} alt="Profile Image" />
+                    <img src={`https://res.cloudinary.com/dllncczbq/image/upload/f_auto,q_auto,w_150,h_150,g_face,c_thumb,r_max/${avatar}`} alt="Profile Image" />
                 )}
             </>
         </Layout>
@@ -82,7 +82,7 @@ export async function getServerSideProps({ req }) {
         }
     }
 
-    const response = fetcher(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/users/me`,
+    const response = await fetcher(`${process.env.NEXT_PUBLIC_STRAPI_URL}/api/users/me`,
         {
             headers: {
                 'Content-Type': 'application/json',

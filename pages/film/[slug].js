@@ -98,7 +98,6 @@ const Film = ({ film, jwt, plot, error }) => {
               </form>
             </h2>
             <ul>
-              {console.log(film.attributes.reviews.data.length === 0)}
               {film.attributes.reviews.data.length === 0 && (<span>
                 No reviews yet
               </span>)}
